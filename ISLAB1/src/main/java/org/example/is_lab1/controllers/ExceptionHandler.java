@@ -87,7 +87,6 @@ public class ExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // Передали {"id": N} несуществующего города/кольца - Spring превращает EntityNotFoundException в ObjectRetrievalFailureException
     @org.springframework.web.bind.annotation.ExceptionHandler(ObjectRetrievalFailureException.class)
     public ResponseEntity<ErrorResponse> handleRetrievalFailure(ObjectRetrievalFailureException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(
@@ -100,7 +99,7 @@ public class ExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    // Нарушение ограничений Bean Validation, найденное при проверке сущности (новое кольцо / город / существо)
+
     @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request) {
         String details = "";
@@ -121,11 +120,9 @@ public class ExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // Некорректный JSON / неверный тип значения в теле запроса (например, число не помещается в int/long)
     @org.springframework.web.bind.annotation.ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
         String details = "Некорректное тело запроса: проверьте формат и типы значений";
-        // Ищем в цепочке причин ошибку Jackson с путём до поля (ring.power, age и т.п.)
         Throwable t = ex.getCause();
         while (t != null && !(t instanceof JsonMappingException)) {
             t = t.getCause();
@@ -177,7 +174,6 @@ public class ExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // Допустимый диапазон по имени поля (границы типов Java и ограничения задания)
     static String rangeHint(String field) {
         if (field == null) return null;
         if (field.equals("x")) {
@@ -201,7 +197,6 @@ public class ExceptionHandler {
         return null;
     }
 
-    // Параметр пути/запроса неверного типа или вне диапазона (например, "1231233123123" не помещается в int)
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(
@@ -215,7 +210,6 @@ public class ExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // Неизвестный тип существа и т.п.
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
         ErrorResponse error = new ErrorResponse(
@@ -228,7 +222,6 @@ public class ExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    // Ошибки БД, которые Spring не отнёс к DataIntegrityViolation (так бывает с EclipseLink), и ошибки коммита
     @org.springframework.web.bind.annotation.ExceptionHandler({DataAccessException.class, TransactionSystemException.class})
     public ResponseEntity<ErrorResponse> handleDatabase(Exception ex, HttpServletRequest request) {
         Throwable root = ex;

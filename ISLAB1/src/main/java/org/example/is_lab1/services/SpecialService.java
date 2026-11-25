@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-// Специальные операции реализованы здесь, в бизнес-логике (без функций и процедур БД).
 @Service
 public class SpecialService {
     private static final String MORDOR = "Мордор";
@@ -38,7 +37,7 @@ public class SpecialService {
         this.notificationService = notificationService;
     }
 
-    // Вернуть один объект, значение поля coordinates которого минимально (сравниваем по x, затем по y)
+
     @Transactional(readOnly = true)
     public BookCreatureDTO minCoordinates() {
         Optional<BookCreature> found = repository.findFirstByOrderByCoordinatesXAscCoordinatesYAsc();
@@ -49,7 +48,6 @@ public class SpecialService {
         return mapper.toDto(creature);
     }
 
-    // Вернуть массив объектов, значение поля name которых содержит заданную подстроку
     @Transactional(readOnly = true)
     public List<BookCreatureDTO> nameMatch(String value) {
         List<BookCreatureDTO> result = new ArrayList<>();
@@ -59,7 +57,6 @@ public class SpecialService {
         return result;
     }
 
-    // Вернуть массив объектов, значение поля ring которых меньше заданного (кольца сравниваем по силе power)
     @Transactional(readOnly = true)
     public List<BookCreatureDTO> ringBelow(int value) {
         List<BookCreatureDTO> result = new ArrayList<>();
@@ -69,9 +66,7 @@ public class SpecialService {
         return result;
     }
 
-    // Забрать все кольца у хоббитов.
-    // ring не может быть null, поэтому хоббиту выдаётся кольцо-заглушка "Без кольца";
-    // его настоящее кольцо остаётся в системе как свободное.
+
     @Transactional
     public int takeRingsFromHobbits() {
         int changed = 0;
@@ -86,7 +81,6 @@ public class SpecialService {
         return changed;
     }
 
-    // Переместить всех хоббитов с кольцами в Мордор (город создаётся, если его ещё нет)
     @Transactional
     public int moveInMordor() {
         MagicCity mordor = cityRepository.findFirstByName(MORDOR).orElse(null);

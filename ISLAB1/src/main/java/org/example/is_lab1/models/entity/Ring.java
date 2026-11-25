@@ -13,8 +13,6 @@ import lombok.Data;
 
 @Entity
 public class Ring {
-    // Название "пустого" кольца-заглушки. Поле ring в BookCreature не может быть null,
-    // поэтому когда у хоббита "забирают кольцо", ему выдаётся кольцо с этим названием.
     public static final String NO_RING = "Без кольца";
 
     @Id

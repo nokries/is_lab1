@@ -1,14 +1,9 @@
 <template>
-  <!-- Серый фон на весь экран, внутри белая карточка по центру -->
   <div class="min-h-screen bg-gray-50 p-6">
     <div class="max-w-5xl mx-auto">
       <div class="bg-white rounded-lg shadow-sm p-6">
         <h1 class="text-3xl font-bold text-gray-900 mb-6">Специальные операции</h1>
-
-        <!-- Пять блоков, по одному на каждую операцию -->
         <div class="space-y-6">
-          <!-- Операция 1: Объект с минимальными координатами -->
-          <!-- Одна кнопка без полей ввода. Результат появляется ниже, когда он есть -->
           <div class="border border-gray-200 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-3">
               Объект с минимальными координатами
@@ -22,7 +17,6 @@
             >
               Найти
             </button>
-            <!-- Зелёный блок с именем, номером и координатами найденного существа -->
             <div v-if="minCoordinatesResult" class="mt-3 p-3 bg-green-50 rounded-lg">
               <p class="font-medium text-green-800">{{ minCoordinatesResult.name }}</p>
               <p class="text-sm text-gray-600">
@@ -32,8 +26,6 @@
             </div>
           </div>
 
-          <!-- Операция 2: Объекты, имя которых содержит подстроку -->
-          <!-- Поле для текста и кнопка поиска -->
           <div class="border border-gray-200 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-3">
               Поиск объектов по подстроке в имени
@@ -52,8 +44,7 @@
                 Найти
               </button>
             </div>
-            <!-- Результат показываем если поиск уже был. Пустой список тоже результат,
-                 поэтому сравниваем с null. Сверху счётчик, ниже карточки с прокруткой -->
+
             <div v-if="nameResults !== null" class="mt-3 space-y-2">
               <p class="text-sm text-gray-600">Найдено: {{ nameResults.length }}</p>
               <div class="max-h-48 overflow-y-auto space-y-2">
@@ -69,8 +60,6 @@
             </div>
           </div>
 
-          <!-- Операция 3: Объекты с кольцом слабее заданного -->
-          <!-- Число вводится в поле, границы указаны под целое число базы данных -->
           <div class="border border-gray-200 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-3">
               Поиск объектов с кольцом меньше заданного
@@ -95,7 +84,7 @@
                 Найти
               </button>
             </div>
-            <!-- Результат в виде списка существ с названием и силой их кольца -->
+
             <div v-if="ringResults !== null" class="mt-3 space-y-2">
               <p class="text-sm text-gray-600">Найдено: {{ ringResults.length }}</p>
               <div class="max-h-48 overflow-y-auto space-y-2">
@@ -113,9 +102,6 @@
             </div>
           </div>
 
-          <!-- Операция 4: Забрать все кольца у хоббитов -->
-          <!-- Оранжевая кнопка, потому что операция меняет данные. Ниже сообщение от сервера,
-               зелёное при успехе и красное при ошибке -->
           <div class="border border-gray-200 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-3">
               Забрать все кольца у хоббитов
@@ -136,8 +122,6 @@
             </div>
           </div>
 
-          <!-- Операция 5: Переместить хоббитов с кольцами в Мордор -->
-          <!-- Красная кнопка, операция тоже меняет данные. Сообщение устроено так же как выше -->
           <div class="border border-gray-200 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-3">
               Переместить всех хоббитов с кольцами в Мордор
@@ -164,19 +148,13 @@
 </template>
 
 <script setup lang="ts">
-// ref делает переменную следимой
 import { ref } from 'vue'
-// Запросы к серверу
 import { api } from './api.js'
-// Жёлтые предупреждения
 import { useToast } from './composables/useToast.js'
-// Красное уведомление об ошибке
 import { showApiError } from './utils/errorHandler.js'
 
-// Берём функцию показа предупреждений
 const { warning } = useToast()
 
-// Показывает красное уведомление об ошибке. Если у ошибки нет заголовка или текста, берёт обычные
 function reportError(error: any) {
   showApiError({
     title: error.title || 'Ошибка',
@@ -184,28 +162,21 @@ function reportError(error: any) {
   })
 }
 
-// Операция 1: Объект с минимальными координатами
-// Здесь лежит найденное существо, пока поиска не было там null
 const minCoordinatesResult = ref<any>(null)
 
-// Просит у сервера существо с минимальными координатами
 async function findMinCoordinates() {
   try {
     minCoordinatesResult.value = await api.getMinCoordinates()
   } catch (error) {
-    // При ошибке показываем уведомление и прячем старый результат
     reportError(error)
     minCoordinatesResult.value = null
   }
 }
 
-// Операция 2: Поиск по подстроке в имени
-// Введённый текст и список найденных существ
 const nameSubstring = ref('')
 const nameResults = ref<any[] | null>(null)
 
 async function findByNameSubstring() {
-  // Если поле пустое, просим ввести текст и не отправляем запрос
   if (!nameSubstring.value) {
     warning('Введите подстроку')
     return
@@ -219,18 +190,14 @@ async function findByNameSubstring() {
   }
 }
 
-// Операция 3: Поиск объектов с кольцом слабее заданного
-// Введённая сила кольца и список найденных существ
 const ringThreshold = ref<number | null>(null)
 const ringResults = ref<any[] | null>(null)
 
 async function findByRingBelow() {
-  // Проверяем что число введено
   if (ringThreshold.value === null || (ringThreshold.value as any) === '') {
     warning('Введите силу кольца')
     return
   }
-  // Проверяем что число целое и помещается в целое число базы данных
   if (!Number.isInteger(ringThreshold.value) || ringThreshold.value < 1 || ringThreshold.value > 2147483647) {
     warning('Сила кольца должна быть целым числом от 1 до 2147483647')
     return
@@ -244,13 +211,10 @@ async function findByRingBelow() {
   }
 }
 
-// Операция 4: Забрать все кольца у хоббитов
-// Текст сообщения и признак успеха, от него зависит цвет блока
 const takeMessage = ref('')
 const takeSuccess = ref(false)
 
 async function takeRings() {
-  // Спрашиваем подтверждение, потому что операция меняет данные
   if (!confirm('Вы уверены, что хотите забрать кольца у всех хоббитов?')) {
     return
   }
@@ -258,7 +222,6 @@ async function takeRings() {
   try {
     const result = await api.takeRingsFromHobbits()
     takeSuccess.value = true
-    // Сообщение приходит от сервера
     takeMessage.value = result.message
   } catch (error: any) {
     takeSuccess.value = false
@@ -266,8 +229,6 @@ async function takeRings() {
   }
 }
 
-// Операция 5: Переместить хоббитов в Мордор
-// То же самое, текст сообщения и признак успеха
 const mordorMessage = ref('')
 const mordorSuccess = ref(false)
 

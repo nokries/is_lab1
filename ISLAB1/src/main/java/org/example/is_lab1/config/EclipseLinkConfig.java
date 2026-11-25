@@ -24,12 +24,12 @@ public class EclipseLinkConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         EclipseLinkJpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
         vendorAdapter.setDatabase(Database.POSTGRESQL);
-        vendorAdapter.setGenerateDdl(false);   // таблицы создаёт schema.sql, а не ORM
+        vendorAdapter.setGenerateDdl(false);
         vendorAdapter.setShowSql(true);
 
         Map<String, Object> props = new HashMap<>();
         props.put("eclipselink.weaving", "false");                 // без javaagent
-        props.put("eclipselink.cache.shared.default", "false");    // общий кэш выключен, новое обращение к базе не получит ранее сохраненное общее кэшированное состояние объекта
+        props.put("eclipselink.cache.shared.default", "false");    // общий кэш выключен: данные всегда из БД
         props.put("eclipselink.ddl-generation", "none");
         props.put("eclipselink.logging.level", "INFO");
 

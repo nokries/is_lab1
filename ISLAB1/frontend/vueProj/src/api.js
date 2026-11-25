@@ -1,6 +1,5 @@
 import { parseApiError } from './utils/errorHandler.js'
 
-
 const API_BASE_URL = '/api'
 
 async function throwApiError(response, defaultMessage) {
@@ -16,12 +15,9 @@ async function throwApiError(response, defaultMessage) {
 
 
 export const api = {
-  // Получить все объекты (с пагинацией и фильтрацией на сервере)
   async getAllCreatures(params = {}) {
     const queryParams = new URLSearchParams()
 
-    // Конвертируем 1-based в 0-based для Spring
-    // (пользователь видит страницы с 1, а Spring считает с 0)
     const page = (params.page || 1) - 1
     queryParams.append('page', page)
 
@@ -29,7 +25,7 @@ export const api = {
       queryParams.append('filterBy', params.filterBy || 'name')
       queryParams.append('filter', params.search)
     }
-    // Добавляем сортировку, если она выбрана
+
     if (params.sort) queryParams.append('sort', params.sort)
     if (params.direction) queryParams.append('direction', params.direction)
 
@@ -41,16 +37,15 @@ export const api = {
 
     const data = await response.json()
 
-    // Конвертируем обратно в 1-based для фронтенда
     return {
-      content: data.content, // объекты на странице
-      totalElements: data.totalElements, // сколько всего объектов
-      totalPages: data.totalPages, // сколько всего страниц
-      currentPage: data.number + 1 // Конвертируем 0-based в 1-based
+      content: data.content,
+      totalElements: data.totalElements,
+      totalPages: data.totalPages,
+      currentPage: data.number + 1
     }
   },
 
-  // Получить один объект по ID
+
   async getCreatureById(id) {
     const response = await fetch(`${API_BASE_URL}/view/${id}`)
     if (!response.ok) {
@@ -59,15 +54,12 @@ export const api = {
     return await response.json()
   },
 
-  // Создать новый объект
   async createCreature(data) {
     const response = await fetch(`${API_BASE_URL}/interact`, {
       method: 'POST',
       headers: {
-        // Сообщаем серверу, что в теле запроса лежит JSON
         'Content-Type': 'application/json',
       },
-      // Превращаем объект в текст JSON
       body: JSON.stringify(data)
     })
 
@@ -75,11 +67,9 @@ export const api = {
       await throwApiError(response, 'Ошибка создания объекта')
     }
 
-    // Возвращаем созданный объект (уже с id)
     return await response.json()
   },
 
-  // Обновить объект
   async updateCreature(id, data) {
     const response = await fetch(`${API_BASE_URL}/modify/${id}`, {
       method: 'POST',
@@ -96,7 +86,7 @@ export const api = {
     return await response.json()
   },
 
-  // Удалить объект
+
   async deleteCreature(id) {
     const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
       method: 'DELETE'
@@ -106,14 +96,10 @@ export const api = {
       await throwApiError(response, 'Ошибка удаления объекта')
     }
 
-    // 204 No Content - успешное удаление
-    // (тела ответа нет, поэтому просто возвращаем true)
     return true
   },
 
-  // Получить города с пагинацией
   async getCities(page = 1) {
-    // Конвертируем 1-based в 0-based для Spring
     const backendPage = page - 1
     const response = await fetch(`${API_BASE_URL}/city/view?page=${backendPage}`)
 
@@ -131,7 +117,6 @@ export const api = {
     }
   },
 
-  // Создать новый город
   async createCity(data) {
     const response = await fetch(`${API_BASE_URL}/city/interact`, {
       method: 'POST',
@@ -148,7 +133,7 @@ export const api = {
     return await response.json()
   },
 
-  // Получить город по ID
+
   async getCityById(id) {
     const response = await fetch(`${API_BASE_URL}/city/view/${id}`)
     if (!response.ok) {
@@ -157,7 +142,6 @@ export const api = {
     return await response.json()
   },
 
-  // Обновить город
   async updateCity(id, data) {
     const response = await fetch(`${API_BASE_URL}/city/modify/${id}`, {
       method: 'POST',
@@ -174,7 +158,6 @@ export const api = {
     return await response.json()
   },
 
-  // Удалить город
   async deleteCity(id) {
     const response = await fetch(`${API_BASE_URL}/city/delete/${id}`, {
       method: 'DELETE'
@@ -187,9 +170,7 @@ export const api = {
     return true
   },
 
-  // Получить кольца с пагинацией
   async getRings(page = 1) {
-    // Конвертируем 1-based в 0-based для Spring
     const backendPage = page - 1
     const response = await fetch(`${API_BASE_URL}/ring/view?page=${backendPage}`)
 
@@ -207,7 +188,6 @@ export const api = {
     }
   },
 
-  // Создать новое кольцо
   async createRing(data) {
     const response = await fetch(`${API_BASE_URL}/ring/create`, {
       method: 'POST',
@@ -224,7 +204,6 @@ export const api = {
     return await response.json()
   },
 
-  // Получить кольцо по ID
   async getRingById(id) {
     const response = await fetch(`${API_BASE_URL}/ring/view/${id}`)
     if (!response.ok) {
@@ -233,7 +212,6 @@ export const api = {
     return await response.json()
   },
 
-  // Обновить кольцо
   async updateRing(id, data) {
     const response = await fetch(`${API_BASE_URL}/ring/modify/${id}`, {
       method: 'POST',
@@ -250,7 +228,7 @@ export const api = {
     return await response.json()
   },
 
-  // Удалить кольцо
+
   async deleteRing(id) {
     const response = await fetch(`${API_BASE_URL}/ring/delete/${id}`, {
       method: 'DELETE'
@@ -263,9 +241,7 @@ export const api = {
     return true
   },
 
-  // Специальные операции
 
-  // Объект с минимальными координатами
   async getMinCoordinates() {
     const response = await fetch(`${API_BASE_URL}/special/minCoordinates`)
 
@@ -276,10 +252,8 @@ export const api = {
     return await response.json()
   },
 
-  // Поиск объектов по подстроке в имени
-  // Используем encodeURIComponent для корректной обработки строк с цифрами и спецсимволами в PathVariable
+
   async findByNameSubstring(substring) {
-    // Кодируем строку, чтобы пробелы и спецсимволы не ломали адрес
     const encoded = encodeURIComponent(substring)
     const response = await fetch(`${API_BASE_URL}/special/nameMatcher/${encoded}`)
 
@@ -290,7 +264,7 @@ export const api = {
     return await response.json()
   },
 
-  // Поиск объектов, у которых кольцо слабее заданного (сравнение по силе кольца)
+
   async findByRingBelow(value) {
     const response = await fetch(`${API_BASE_URL}/special/ringBelow/${value}`)
 
@@ -301,7 +275,7 @@ export const api = {
     return await response.json()
   },
 
-  // Забрать все кольца у хоббитов
+
   async takeRingsFromHobbits() {
     const response = await fetch(`${API_BASE_URL}/special/takeRings`, {
       method: 'POST'
@@ -314,7 +288,7 @@ export const api = {
     return await response.json()
   },
 
-  // Переместить хоббитов с кольцами в Мордор
+
   async moveHobbitsToMordor() {
     const response = await fetch(`${API_BASE_URL}/special/move`, {
       method: 'POST'

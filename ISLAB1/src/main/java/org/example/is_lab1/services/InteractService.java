@@ -71,7 +71,6 @@ public class InteractService {
 
         repository.delete(creature);
 
-        // Проверяем, остались ли ещё жители этого города
         if (city != null) {
             boolean hasResidents = repository.existsByCreatureLocation(city);
             if (!hasResidents) {
@@ -82,7 +81,6 @@ public class InteractService {
         notificationService.notifyDeleted(WebSocketNotificationService.CREATURE, id);
     }
 
-    // filterBy - по какой строковой колонке фильтруем (name / creatureType / city / ring), фильтр - только полное совпадение
     public Page<BookCreatureDTO> get(Pageable pageable, String filterBy, String filter){
         Page<BookCreature> page;
         if (filter != null && !filter.isEmpty()) {

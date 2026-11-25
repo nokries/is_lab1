@@ -24,19 +24,16 @@ public abstract class MagicCityMapper {
     @Autowired
     protected Validator validator;
 
-    // Если передан только id - возвращаем ссылку, иначе создаем новый
     @Named("toEntity")
     public MagicCity toEntity(MagicCityDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        // Если передан только id без остальных полей - используем ссылку на существующую сущность
         if (dto.id() != 0 && (dto.name() == null || dto.name().isBlank())) {
             return cityRepository.getReferenceById(dto.id());
         }
 
-        // Иначе создаем новый объект через маппинг и проверяем его по аннотациям сущности
         MagicCity city = mapToEntity(dto);
         Set<ConstraintViolation<MagicCity>> violations = validator.validate(city);
         if (!violations.isEmpty()) {

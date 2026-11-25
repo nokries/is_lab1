@@ -6,7 +6,6 @@ public enum BookCreatureType {
     HUMAN,
     GOLLUM;
 
-    // null / пустая строка -> null (поле creatureType и governor могут быть null)
     public static BookCreatureType getType(String name){
         if (name == null || name.isBlank()) {
             return null;

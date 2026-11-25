@@ -14,15 +14,13 @@ public interface BookCreatureMapper {
     @Mapping(target = "creatureType", expression = "java(BookCreatureType.getType(dto.creatureType()))")
     @Mapping(target = "creatureLocation", qualifiedByName = "toEntity")
     @Mapping(target = "ring", qualifiedByName = "toEntity")
-    @Mapping(target = "creationDate", ignore = true) // генерируется автоматически (@PrePersist)
-    @Mapping(target = "id", ignore = true) // id всегда генерирует БД
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "id", ignore = true)
     BookCreature toEntity(BookCreatureDTO dto);
-
     BookCreatureDTO toDto(BookCreature entity);
 
-    // Обновление существующей сущности (при modify)
-    @Mapping(target = "id", ignore = true) // id не трогаем
-    @Mapping(target = "creationDate", ignore = true) // дату создания не меняем
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "creatureType", expression = "java(BookCreatureType.getType(dto.creatureType()))")
     @Mapping(target = "creatureLocation", qualifiedByName = "toEntity")
     @Mapping(target = "ring", qualifiedByName = "toEntity")

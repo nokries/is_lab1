@@ -23,19 +23,16 @@ public abstract class RingMapper {
     @Autowired
     protected Validator validator;
 
-    // Если передан только id - возвращаем ссылку, иначе создаем новый
     @Named("toEntity")
     public Ring toEntity(RingDTO dto) {
         if (dto == null) {
             return null;
         }
 
-        // Если передан только id без остальных полей - используем ссылку на существующую сущность
         if (dto.id() != 0 && (dto.name() == null || dto.name().isBlank())) {
             return ringRepository.getReferenceById(dto.id());
         }
 
-        // Иначе создаем новый объект через маппинг и проверяем его по аннотациям сущности
         Ring ring = mapToEntity(dto);
         Set<ConstraintViolation<Ring>> violations = validator.validate(ring);
         if (!violations.isEmpty()) {

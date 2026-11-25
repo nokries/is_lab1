@@ -3,9 +3,9 @@ import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
 
 export function useWebSocket() {
-  const isConnected = ref(false) // связь с сервером
-  const client = ref(null) // объект STOMP для открытия связи сервером и подписки на новости
-  const messageHandlers = new Map() // список получателей: имя и вызванная при новости функция
+  const isConnected = ref(false)
+  const client = ref(null)
+  const messageHandlers = new Map()
 
   const connect = (onConnectCallback) => {
     const socket = new SockJS('/ws')
@@ -15,17 +15,17 @@ export function useWebSocket() {
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      
-      onConnect: () => { // реакция на событие (есть соединение с сервером)
+
+      onConnect: () => {
         console.log('WebSocket connected')
         isConnected.value = true
         
-        client.value.subscribe('/topic/entities', (message) => { // подписка: функция вызывается при каждой новости
+        client.value.subscribe('/topic/entities', (message) => {
           try {
-            const data = JSON.parse(message.body) // текст новости превращаем в данные
+            const data = JSON.parse(message.body)
             console.log('WebSocket message received:', data)
             
-            messageHandlers.forEach((handler) => { // для каждого получателя из списка вызываем его функцию и передаём новость
+            messageHandlers.forEach((handler) => {
               handler(data)
             })
           } catch (error) {
@@ -33,22 +33,22 @@ export function useWebSocket() {
           }
         })
 
-        if (onConnectCallback) { // если при вызове connect передали функцию, вызываем её
+        if (onConnectCallback) {
           onConnectCallback()
         }
       },
 
-      onDisconnect: () => { // соединение с сервером пропало
+      onDisconnect: () => {
         console.log('WebSocket disconnected')
         isConnected.value = false
       },
 
-      onStompError: (frame) => { // ошибка на сервере
+      onStompError: (frame) => {
         console.error('STOMP error:', frame)
       }
     })
 
-    client.value.activate() // запустить подключение
+    client.value.activate()
   }
 
   const disconnect = () => {
@@ -59,7 +59,7 @@ export function useWebSocket() {
     }
   }
 
-  const addMessageHandler = (id, handler) => { // берёт каждую запомненную функцию и вызывает её с новостью
+  const addMessageHandler = (id, handler) => {
     messageHandlers.set(id, handler)
   }
 

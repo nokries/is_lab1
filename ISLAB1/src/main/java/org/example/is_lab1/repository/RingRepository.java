@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RingRepository extends JpaRepository<Ring, Long> {
-    // Свободные кольца (без владельца). Кольцо-заглушка "Без кольца" в список не попадает.
     @Query(value = """
         SELECT r FROM Ring r
         WHERE r.name <> :noRing AND r.id NOT IN (

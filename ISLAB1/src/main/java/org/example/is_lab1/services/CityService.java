@@ -59,7 +59,6 @@ public class CityService {
         }
         MagicCity city = found.get();
 
-        // Каскадное удаление: вместе с городом удаляются все существа, которые в нём живут
         for (BookCreature resident : interactRepository.findByCreatureLocation(city)) {
             interactRepository.delete(resident);
             notificationService.notifyDeleted(WebSocketNotificationService.CREATURE, resident.getId());

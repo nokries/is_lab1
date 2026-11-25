@@ -9,7 +9,8 @@ export function useToast() {
     const toast = {
       id,
       message,
-      type
+      type, 
+      visible: true
     }
     
     toasts.value.push(toast)

@@ -16,7 +16,6 @@ import java.util.Optional;
 public interface InteractRepository extends JpaRepository<BookCreature, Long> {
     boolean existsByCreatureLocation(MagicCity city);
 
-    // Фильтрация таблицы: только полное совпадение (без Containing / IgnoreCase)
     Page<BookCreature> findByName(String name, Pageable pageable);
 
     Page<BookCreature> findByCreatureType(BookCreatureType type, Pageable pageable);
@@ -25,12 +24,12 @@ public interface InteractRepository extends JpaRepository<BookCreature, Long> {
 
     Page<BookCreature> findByRingName(String ringName, Pageable pageable);
 
-    // Для каскадного удаления
+
     List<BookCreature> findByCreatureLocation(MagicCity city);
 
     Optional<BookCreature> findByRing(Ring ring);
 
-    // Специальные операции
+
     Optional<BookCreature> findFirstByOrderByCoordinatesXAscCoordinatesYAsc();
 
     List<BookCreature> findByNameContaining(String substring);
